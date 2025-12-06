@@ -59,7 +59,7 @@ const UpdateMember = () => {
     setError('');
 
     try {
-      await membersApi.update(member.id, formData);
+      await membersApi.update(member._id, formData);
       setSuccess(formData.cancelMembership ? 'Membership cancelled!' : 'Membership updated successfully!');
       setTimeout(() => navigate('/reports/members'), 2000);
     } catch (err) {
