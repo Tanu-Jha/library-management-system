@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { DollarSign, AlertCircle, Check, Loader2, ArrowLeft } from 'lucide-react';
+import { IndianRupee, AlertCircle, Check, Loader2, ArrowLeft } from 'lucide-react';
 import { transactionsApi } from '../../utils/api';
 import './styles/Transactions.css';
 import './styles/PayFine.css';
@@ -160,11 +160,11 @@ const PayFine = () => {
                 </p>
               </div>
               <div className={`fine-icon ${hasFine ? 'fine-icon--has-fine' : 'fine-icon--no-fine'}`}>
-                <DollarSign size={32} />
+                <IndianRupee size={32} />
               </div>
             </div>
             {hasFine && (
-              <p className="fine-note">Fine calculated at ₹1.00 per day overdue</p>
+              <p className="fine-note">Fine calculated at ₹10.00 per day overdue</p>
             )}
 
             {/* Fine Paid Checkbox */}
