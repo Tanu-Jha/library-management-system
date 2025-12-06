@@ -1,0 +1,387 @@
+/* Maintenance.css - Shared styles for maintenance components */
+
+/* Page Layout */
+.maintenance-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.maintenance-header {
+  margin-bottom: 0.5rem;
+}
+
+.maintenance-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .maintenance-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .maintenance-grid--full {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Type Selection Buttons */
+.type-selection {
+  display: flex;
+  gap: 1rem;
+}
+
+.type-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(30, 41, 59, 0.1);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.type-btn:hover {
+  border-color: rgba(30, 41, 59, 0.3);
+}
+
+.type-btn--active {
+  border-color: #c9a227;
+  background-color: rgba(201, 162, 39, 0.1);
+}
+
+/* Form Styles */
+.maintenance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-row--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .form-row--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid rgba(30, 41, 59, 0.1);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #c9a227;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
+}
+
+.input-field:disabled {
+  background-color: rgba(252, 248, 232, 0.5);
+  cursor: not-allowed;
+}
+
+.input-field::placeholder {
+  color: rgba(30, 41, 59, 0.4);
+}
+
+.select-field {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid rgba(30, 41, 59, 0.1);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: white;
+  cursor: pointer;
+}
+
+.select-field:focus {
+  outline: none;
+  border-color: #c9a227;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
+}
+
+.textarea-field {
+  resize: none;
+  min-height: 5rem;
+}
+
+/* Radio Group */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-label input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #c9a227;
+}
+
+.radio-label--selected {
+  font-weight: 500;
+}
+
+/* Messages */
+.message {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.message--error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.message--error svg {
+  color: #ef4444;
+}
+
+.message--error p {
+  color: #b91c1c;
+}
+
+.message--success {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.message--success svg {
+  color: #22c55e;
+}
+
+.message--success p {
+  color: #15803d;
+}
+
+/* Button Group */
+.btn-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #334155;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 0.875rem 1.5rem;
+  background-color: transparent;
+  color: #1e293b;
+  border: 2px solid rgba(30, 41, 59, 0.2);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(30, 41, 59, 0.4);
+  background-color: rgba(30, 41, 59, 0.05);
+}
+
+.btn-danger {
+  background-color: #ef4444;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+/* Info Card */
+.info-card {
+  background-color: rgba(252, 248, 232, 0.5);
+  height: fit-content;
+}
+
+.info-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(30, 41, 59, 0.7);
+}
+
+.info-item svg {
+  color: #22c55e;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+/* Search Input */
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(30, 41, 59, 0.4);
+}
+
+.search-input {
+  padding-left: 2.5rem;
+}
+
+/* Item List */
+.item-list {
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid rgba(30, 41, 59, 0.1);
+  border-radius: 0.75rem;
+}
+
+.item-row {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.05);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-row:hover {
+  background-color: rgba(252, 248, 232, 0.5);
+}
+
+.item-row--selected {
+  background-color: rgba(201, 162, 39, 0.1);
+}
+
+.item-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.item-meta {
+  font-size: 0.75rem;
+  color: rgba(30, 41, 59, 0.5);
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,138 @@
+/* PayFine.css - Additional styles for PayFine component */
+
+/* Back Button Header */
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-btn {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #fcf8e8;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Transaction Details */
+.detail-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Fine Display */
+.fine-display {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fine-display--has-fine {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.fine-display--no-fine {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.fine-label {
+  font-size: 0.875rem;
+}
+
+.fine-label--has-fine {
+  color: #dc2626;
+}
+
+.fine-label--no-fine {
+  color: #16a34a;
+}
+
+.fine-amount {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.fine-amount--has-fine {
+  color: #b91c1c;
+}
+
+.fine-amount--no-fine {
+  color: #15803d;
+}
+
+.fine-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fine-icon--has-fine {
+  background-color: #fee2e2;
+}
+
+.fine-icon--has-fine svg {
+  color: #ef4444;
+}
+
+.fine-icon--no-fine {
+  background-color: #dcfce7;
+}
+
+.fine-icon--no-fine svg {
+  color: #22c55e;
+}
+
+.fine-note {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin-top: 0.5rem;
+}
+
+/* Fine Paid Checkbox */
+.fine-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(252, 248, 232, 0.5);
+  border-radius: 0.75rem;
+}
+
+.fine-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #c9a227;
+  border-radius: 0.25rem;
+}
+
+.fine-checkbox-label {
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+}

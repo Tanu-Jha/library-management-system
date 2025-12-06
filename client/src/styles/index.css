@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-body text-library-dark bg-library-paper antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-library-accent/30;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-library-dark text-library-cream font-medium rounded-lg 
+           hover:bg-library-warm transition-all duration-300 
+           shadow-sm hover:shadow-md active:scale-[0.98]
+           focus:outline-none focus:ring-2 focus:ring-library-accent focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-library-cream text-library-dark font-medium rounded-lg
+           border-2 border-library-dark/10 hover:border-library-dark/30
+           transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-library-accent focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply px-6 py-3 bg-red-600 text-white font-medium rounded-lg
+           hover:bg-red-700 transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-library-dark/10
+           bg-white/80 backdrop-blur-sm
+           focus:border-library-accent focus:ring-0 focus:outline-none
+           transition-all duration-200
+           placeholder:text-library-dark/40;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-library-dark/10
+           bg-white/80 backdrop-blur-sm appearance-none cursor-pointer
+           focus:border-library-accent focus:ring-0 focus:outline-none
+           transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-card p-6 
+           border border-library-dark/5
+           hover:shadow-elevated transition-shadow duration-300;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl
+           text-library-cream/70 hover:text-library-cream
+           hover:bg-white/10 transition-all duration-200;
+  }
+
+  .sidebar-link.active {
+    @apply bg-library-accent/20 text-library-cream;
+  }
+
+  .table-header {
+    @apply px-4 py-3 text-left text-sm font-semibold text-library-dark/70 uppercase tracking-wider;
+  }
+
+  .table-cell {
+    @apply px-4 py-4 text-sm text-library-dark;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .page-title {
+    @apply text-3xl md:text-4xl font-display font-bold text-library-dark mb-2;
+  }
+
+  .page-subtitle {
+    @apply text-library-dark/60 text-lg;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-library-dark/80 mb-2;
+  }
+
+  .form-error {
+    @apply text-red-600 text-sm mt-1;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-library-accent to-library-gold bg-clip-text text-transparent;
+  }
+
+  .pattern-dots {
+    background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .pattern-lines {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(0,0,0,0.02) 10px,
+      rgba(0,0,0,0.02) 20px
+    );
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+/* Animation classes */
+.animate-stagger > * {
+  animation: slideUp 0.4s ease-out both;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.15s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.25s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.35s; }

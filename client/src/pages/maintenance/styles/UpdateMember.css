@@ -1,0 +1,130 @@
+/* UpdateMember.css - Additional styles for UpdateMember component */
+
+/* Member Details Card */
+.member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.member-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.member-detail-row .label {
+  color: rgba(30, 41, 59, 0.6);
+}
+
+.member-detail-row .value {
+  font-family: monospace;
+}
+
+/* Update Options */
+.update-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid rgba(30, 41, 59, 0.1);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.update-option:hover {
+  border-color: #c9a227;
+}
+
+.update-option input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #c9a227;
+}
+
+.update-option-content h4 {
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+}
+
+.update-option-content p {
+  font-size: 0.875rem;
+  color: rgba(30, 41, 59, 0.6);
+  margin: 0;
+}
+
+/* Cancel Option */
+.update-option--danger {
+  border-color: #fecaca;
+  background-color: rgba(254, 242, 242, 0.5);
+}
+
+.update-option--danger:hover {
+  border-color: #f87171;
+}
+
+.update-option--danger input {
+  accent-color: #ef4444;
+}
+
+.update-option--danger h4 {
+  color: #b91c1c;
+}
+
+.update-option--danger p {
+  color: rgba(185, 28, 28, 0.7);
+}
+
+/* Membership Type Options */
+.membership-options {
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  margin-left: 0.5rem;
+}
+
+.badge--success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge--danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Search Header */
+.search-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-header .search-wrapper {
+  flex: 1;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
