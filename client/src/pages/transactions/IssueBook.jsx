@@ -24,7 +24,7 @@ const IssueBook = () => {
   const defaultReturnDate = maxReturnDate.toISOString().split('T')[0];
 
   const [formData, setFormData] = useState({
-    itemId: preselectedItem?.id || '',
+    itemId: preselectedItem?._id || '',
     memberId: '',
     issueDate: today,
     returnDate: defaultReturnDate,
@@ -97,8 +97,8 @@ const IssueBook = () => {
     try {
       await transactionsApi.issue({
         itemType,
-        itemId: parseInt(formData.itemId),
-        memberId: parseInt(formData.memberId),
+        itemId: formData.itemId,
+        memberId: formData.memberId,
         issueDate: formData.issueDate,
         returnDate: formData.returnDate,
         remarks: formData.remarks
@@ -127,7 +127,7 @@ const IssueBook = () => {
     }
   };
 
-  const selectedItem = items.find(i => i.id === parseInt(formData.itemId));
+  const selectedItem = items.find(i => i._id === formData.itemId);
 
   if (loading) {
     return (
@@ -184,7 +184,7 @@ const IssueBook = () => {
               >
                 <option value="">-- Select {itemType === 'book' ? 'Book' : 'Movie'} --</option>
                 {items.map(item => (
-                  <option key={item.id} value={item.id}>
+                  <option key={item._id} value={item._id}>
                     {item.name} - {item.author || item.director}
                   </option>
                 ))}
@@ -217,7 +217,7 @@ const IssueBook = () => {
               >
                 <option value="">-- Select Member --</option>
                 {members.map(member => (
-                  <option key={member.id} value={member.id}>
+                  <option key={member._id} value={member._id}>
                     {member.first_name} {member.last_name} ({member.membership_number})
                   </option>
                 ))}
