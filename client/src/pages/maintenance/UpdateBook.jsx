@@ -77,9 +77,9 @@ const UpdateBook = () => {
       };
 
       if (itemType === 'book') {
-        await booksApi.update(selectedItem.id, data);
+        await booksApi.update(selectedItem._id, data);
       } else {
-        await moviesApi.update(selectedItem.id, data);
+        await moviesApi.update(selectedItem._id, data);
       }
 
       setSuccess('Item updated successfully!');
@@ -142,7 +142,7 @@ const UpdateBook = () => {
               <div
                 key={item.id}
                 onClick={() => handleSelectItem(item)}
-                className={`item-row ${selectedItem?.id === item.id ? 'item-row--selected' : ''}`}
+                className={`item-row ${selectedItem?._id === item._id ? 'item-row--selected' : ''}`}
               >
                 <p className="item-name">{item.name}</p>
                 <p className="item-meta">{item.serial_number} • {item.author || item.director}</p>

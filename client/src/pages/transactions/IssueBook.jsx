@@ -20,10 +20,10 @@ const IssueBook = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
   const maxReturnDate = new Date();
   maxReturnDate.setDate(maxReturnDate.getDate() + 15);
-  const defaultReturnDate = maxReturnDate.toISOString().split('T')[0];
+  const defaultReturnDate = maxReturnDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   const [formData, setFormData] = useState({
     itemId: preselectedItem?._id || '',
@@ -253,6 +253,7 @@ const IssueBook = () => {
                   min={today}
                   className="input-field"
                   required
+                  disabled
                 />
               </div>
               <div className="form-group">

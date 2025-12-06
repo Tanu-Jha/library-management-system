@@ -149,42 +149,34 @@ router.post('/issue', authenticateToken, async (req, res) => {
 
     if (!req.user.isAdmin) {
       const userMember = await Member.findOne({ user_id: req.user.id });
-      if (!userMember) {
-        return res.status(403).json({ error: "No membership found for your account." });
-      }
-      if (userMember._id.toString() !== memberId) {
-        return res.status(403).json({ error: "You can only issue items for yourself." });
-      }
+      if (!userMember) return res.status(403).json({ error: "No membership found." });
+      if (userMember._id.toString() !== memberId) return res.status(403).json({ error: "Access denied." });
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const issueDateObj = new Date(issueDate);
-    
-    if (issueDateObj < today) {
-      return res.status(400).json({ error: 'Issue date cannot be in the past' });
-    }
-
-    const maxReturnDate = new Date(issueDateObj);
-    maxReturnDate.setDate(maxReturnDate.getDate() + 15);
-    if (new Date(returnDate) > maxReturnDate) {
-      return res.status(400).json({ error: 'Return date cannot be more than 15 days from issue date' });
-    }
+    if (new Date(issueDate) < today) return res.status(400).json({ error: 'Issue date cannot be in the past' });
 
     const member = await Member.findOne({ _id: memberId, is_active: 1 });
-    if (!member) {
-      return res.status(400).json({ error: 'Invalid or inactive member' });
-    }
+    if (!member) return res.status(400).json({ error: 'Invalid or inactive member' });
 
     let item;
     if (itemType === 'book') {
-      item = await Book.findOne({ _id: itemId, status: 'Available' });
+      item = await Book.findById(itemId);
     } else if (itemType === 'movie') {
-      item = await Movie.findOne({ _id: itemId, status: 'Available' });
+      item = await Movie.findById(itemId);
     }
 
-    if (!item) {
-      return res.status(400).json({ error: 'Item not found or not available' });
+    if (!item) return res.status(404).json({ error: 'Item not found' });
+
+    const activeIssuesCount = await Transaction.countDocuments({
+      item_type: itemType,
+      item_id: itemId,
+      status: { $in: ['issued', 'overdue'] }
+    });
+
+    if (activeIssuesCount >= item.quantity) {
+      return res.status(400).json({ error: 'All copies of this item are currently issued' });
     }
 
     const transaction = await Transaction.create({
@@ -197,8 +189,15 @@ router.post('/issue', authenticateToken, async (req, res) => {
       remarks: remarks || ''
     });
 
-    item.status = 'Issued';
-    await item.save();
+    if (activeIssuesCount + 1 >= item.quantity) {
+      item.status = 'Issued';
+      await item.save();
+    } else {
+      if (item.status !== 'Available') {
+        item.status = 'Available';
+        await item.save();
+      }
+    }
 
     res.status(201).json({ message: 'Item issued successfully', transaction });
   } catch (error) {
@@ -287,7 +286,7 @@ router.post('/pay-fine', authenticateToken, async (req, res) => {
     if (!req.user.isAdmin) {
       const userMember = await Member.findOne({ user_id: req.user.id });
       if (!userMember || transaction.member_id.toString() !== userMember._id.toString()) {
-        return res.status(403).json({ error: "You can only pay fines for your own items." });
+        return res.status(403).json({ error: "Access denied." });
       }
     }
 

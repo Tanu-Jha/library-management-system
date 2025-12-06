@@ -10,7 +10,8 @@ const AddMember = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const today = new Date().toISOString().split('T')[0];
+  // Ensure default date is in IST
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -19,7 +20,9 @@ const AddMember = () => {
     contactAddress: '',
     aadharNumber: '',
     startDate: today,
-    membershipType: '6_months'
+    membershipType: '6_months',
+    username: '',
+    password: ''
   });
 
   const handleChange = (e) => {
@@ -31,6 +34,11 @@ const AddMember = () => {
   const validateForm = () => {
     if (!formData.firstName || !formData.lastName) {
       setError('First name and last name are required');
+      return false;
+    }
+    // New validation for user account
+    if (!formData.username || !formData.password) {
+      setError('Username and Password are required for the user account');
       return false;
     }
     if (!formData.startDate) {
@@ -49,7 +57,7 @@ const AddMember = () => {
 
     try {
       await membersApi.create(formData);
-      setSuccess('Member added successfully!');
+      setSuccess('Member and User account added successfully!');
       setTimeout(() => navigate('/reports/members'), 2000);
     } catch (err) {
       setError(err.message || 'Failed to add member');
@@ -74,6 +82,38 @@ const AddMember = () => {
       <div className="maintenance-grid">
         <div className="card">
           <form onSubmit={handleSubmit} className="maintenance-form">
+            
+            {/* New User Account Section */}
+            <div className="section-title" style={{ fontSize: '1rem', marginBottom: '1rem', fontWeight: 600, color: '#1e293b' }}>User Account Details</div>
+            <div className="form-row form-row--2">
+              <div className="form-group">
+                <label className="form-label">Username *</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="input-field"
+                  required
+                  placeholder="Login username"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password *</label>
+                <input
+                  type="text"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="input-field"
+                  required
+                  placeholder="Initial password"
+                />
+              </div>
+            </div>
+
+            <div className="section-title" style={{ fontSize: '1rem', marginBottom: '1rem', marginTop: '1rem', fontWeight: 600, color: '#1e293b' }}>Personal Details</div>
+
             <div className="form-row form-row--2">
               <div className="form-group">
                 <label className="form-label">First Name *</label>
@@ -216,6 +256,10 @@ const AddMember = () => {
             <li className="info-item">
               <Check size={16} />
               <span>Default membership is 6 months</span>
+            </li>
+            <li className="info-item">
+              <Check size={16} />
+              <span>Creates a User login automatically</span>
             </li>
           </ul>
         </div>

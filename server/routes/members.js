@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { Member, Transaction, User } from '../models/index.js'; 
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
@@ -46,15 +47,36 @@ router.get('/:identifier', authenticateToken, async (req, res) => {
   }
 });
 
-// Add new member (admin only)
+// Add new member (admin only) - Creates User + Member
 router.post('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { firstName, lastName, contactName, contactAddress, aadharNumber, startDate, membershipType } = req.body;
+    const { 
+      firstName, lastName, contactName, contactAddress, aadharNumber, 
+      startDate, membershipType, username, password 
+    } = req.body;
 
-    if (!firstName || !lastName || !startDate || !membershipType) {
-      return res.status(400).json({ error: 'First name, last name, start date, and membership type are required' });
+    if (!firstName || !lastName || !startDate || !membershipType || !username || !password) {
+      return res.status(400).json({ error: 'All fields including username and password are required' });
     }
 
+    // 1. Check if User exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    // 2. Create User
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      name: `${firstName} ${lastName}`,
+      is_admin: 0,
+      is_active: 1,
+      membership_status: 'approved'
+    });
+
+    // 3. Calculate Dates
     const start = new Date(startDate);
     let end = new Date(start);
     
@@ -72,6 +94,7 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
         end.setMonth(end.getMonth() + 6);
     }
 
+    // 4. Create Member
     const count = await Member.countDocuments();
     const membership_number = `MEM-${String(count + 1).padStart(3, '0')}`;
 
@@ -85,10 +108,11 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
       start_date: start,
       end_date: end,
       membership_type: membershipType,
-      is_active: 1
+      is_active: 1,
+      user_id: newUser._id // Link to the new user
     });
 
-    res.status(201).json(member);
+    res.status(201).json({ member, user: { id: newUser._id, username } });
   } catch (error) {
     console.error('Add member error:', error);
     res.status(500).json({ error: 'Failed to add member' });
@@ -175,6 +199,10 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
       }
 
       member.is_active = 0;
+
+      if (member.user_id) {
+        await User.findByIdAndUpdate(member.user_id, { is_active: 0 });
+      }
     }
 
     if (extendMembership && membershipType) {
@@ -199,6 +227,11 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
       
       member.end_date = currentEnd;
       member.is_active = 1;
+      
+      // SYNC: Reactivate linked User if extending
+      if (member.user_id) {
+        await User.findByIdAndUpdate(member.user_id, { is_active: 1 });
+      }
     }
 
     await member.save();
@@ -234,6 +267,11 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
 
     member.is_active = 0;
     await member.save();
+
+    if (member.user_id) {
+      await User.findByIdAndUpdate(member.user_id, { is_active: 0 });
+    }
+
     res.json({ message: 'Member deactivated successfully' });
   } catch (error) {
     console.error('Delete member error:', error);

@@ -15,7 +15,7 @@ const ReturnBook = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   const [formData, setFormData] = useState({
     transactionId: '',
@@ -249,6 +249,7 @@ const ReturnBook = () => {
                   onChange={handleChange}
                   className="input-field"
                   required
+                  disabled
                 />
               </div>
 

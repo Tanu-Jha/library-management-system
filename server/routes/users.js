@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { User } from '../models/index.js';
+import { User, Member } from '../models/index.js'; // Added Member import
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -117,7 +117,18 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
     if (name) user.name = name;
     if (email !== undefined) user.email = email;
     if (isAdmin !== undefined) user.is_admin = isAdmin ? 1 : 0;
-    if (isActive !== undefined) user.is_active = isActive ? 1 : 0;
+    
+    if (isActive !== undefined) {
+      const newStatus = isActive ? 1 : 0;
+      user.is_active = newStatus;
+      
+      // SYNC: Update linked Member status
+      await Member.findOneAndUpdate(
+        { user_id: id },
+        { is_active: newStatus }
+      );
+    }
+
     if (password) user.password = bcrypt.hashSync(password, 10);
 
     await user.save();
@@ -153,6 +164,11 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
 
     user.is_active = 0;
     await user.save();
+
+    await Member.findOneAndUpdate(
+      { user_id: id },
+      { is_active: 0 }
+    );
 
     res.json({ message: 'User deactivated successfully' });
   } catch (error) {

@@ -11,7 +11,7 @@ const AddBook = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
   const categories = ['Science', 'Economics', 'Fiction', 'Children', 'Personal Development'];
 
   const [formData, setFormData] = useState({
