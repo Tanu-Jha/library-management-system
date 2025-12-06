@@ -17,6 +17,9 @@ const Layout = () => {
     maintenance: false
   });
 
+  // Check if user is pending
+  const isPending = !isAdmin && user?.membershipStatus === 'pending';
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -131,7 +134,7 @@ const Layout = () => {
               <div>
                 <p className="text-library-cream font-medium">{user?.name}</p>
                 <p className="text-library-cream/50 text-sm">
-                  {isAdmin ? 'Administrator' : 'User'}
+                  {isAdmin ? 'Administrator' : (isPending ? 'Pending Approval' : 'User')}
                 </p>
               </div>
             </div>
@@ -152,19 +155,24 @@ const Layout = () => {
               <span className="font-medium">Dashboard</span>
             </NavLink>
 
-            <NavSection 
-              title="Transactions" 
-              links={transactionsLinks} 
-              menuKey="transactions"
-              icon={FileText}
-            />
+            {/* ONLY SHOW TRANSACTIONS IF NOT PENDING */}
+            {!isPending && (
+              <NavSection 
+                title="Transactions" 
+                links={transactionsLinks} 
+                menuKey="transactions"
+                icon={FileText}
+              />
+            )}
             
-            <NavSection 
-              title="Reports" 
-              links={reportsLinks} 
-              menuKey="reports"
-              icon={ClipboardList}
-            />
+            {isAdmin && (
+              <NavSection 
+                title="Reports" 
+                links={reportsLinks} 
+                menuKey="reports"
+                icon={ClipboardList}
+              />
+            )}
 
             {isAdmin && (
               <NavSection 

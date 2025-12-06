@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BookPlus, AlertCircle, Check, Loader2 } from 'lucide-react';
 import { booksApi, moviesApi, membersApi, transactionsApi } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 import './styles/Transactions.css';
 
 const IssueBook = () => {
+  const { user, isAdmin } = useAuth(); // Get current user info
   const location = useLocation();
   const navigate = useNavigate();
   const preselectedItem = location.state?.item;
@@ -35,6 +37,13 @@ const IssueBook = () => {
     loadData();
   }, [itemType]);
 
+  // Auto-select user if they are not admin
+  useEffect(() => {
+    if (!isAdmin && user?.memberId && members.length > 0) {
+      setFormData(prev => ({ ...prev, memberId: user.memberId }));
+    }
+  }, [members, user, isAdmin]);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -42,8 +51,16 @@ const IssueBook = () => {
         itemType === 'book' ? booksApi.getAvailable() : moviesApi.getAvailable(),
         membersApi.getAll({ active: 'true' })
       ]);
+      
       setItems(itemsData);
-      setMembers(membersData);
+
+      // Filter members list: Admin sees all, User sees only themselves
+      if (isAdmin) {
+        setMembers(membersData);
+      } else if (user?.memberId) {
+        const myProfile = membersData.find(m => m.id === user.memberId || m._id === user.memberId);
+        setMembers(myProfile ? [myProfile] : []);
+      }
     } catch (err) {
       setError('Failed to load data');
     } finally {
@@ -106,9 +123,10 @@ const IssueBook = () => {
 
       setSuccess(`${itemType === 'book' ? 'Book' : 'Movie'} issued successfully!`);
 
+      // Reset form but keep member selected if user
       setFormData({
         itemId: '',
-        memberId: '',
+        memberId: isAdmin ? '' : user.memberId,
         issueDate: today,
         returnDate: defaultReturnDate,
         remarks: ''
@@ -142,17 +160,14 @@ const IssueBook = () => {
 
   return (
     <div className="transactions-container">
-      {/* Header */}
       <div className="transactions-header">
         <h1 className="page-title">Issue Book / Movie</h1>
-        <p className="page-subtitle">Issue a book or movie to a library member</p>
+        <p className="page-subtitle">Issue a book or movie</p>
       </div>
 
       <div className="transactions-grid">
-        {/* Form */}
         <div className="card">
           <form onSubmit={handleSubmit} className="transaction-form">
-            {/* Type Selection */}
             <div className="type-selection">
               <button
                 type="button"
@@ -170,7 +185,6 @@ const IssueBook = () => {
               </button>
             </div>
 
-            {/* Item Selection */}
             <div className="form-group">
               <label className="form-label">
                 Select {itemType === 'book' ? 'Book' : 'Movie'} *
@@ -191,7 +205,6 @@ const IssueBook = () => {
               </select>
             </div>
 
-            {/* Author (auto-populated) */}
             <div className="form-group">
               <label className="form-label">
                 {itemType === 'book' ? 'Author' : 'Director'}
@@ -205,7 +218,6 @@ const IssueBook = () => {
               />
             </div>
 
-            {/* Member Selection */}
             <div className="form-group">
               <label className="form-label">Select Member *</label>
               <select
@@ -214,6 +226,7 @@ const IssueBook = () => {
                 onChange={handleChange}
                 className="select-field"
                 required
+                disabled={!isAdmin} // Lock for regular users
               >
                 <option value="">-- Select Member --</option>
                 {members.map(member => (
@@ -222,9 +235,13 @@ const IssueBook = () => {
                   </option>
                 ))}
               </select>
+              {!isAdmin && !user?.memberId && (
+                <p style={{color: '#dc2626', fontSize: '0.875rem', marginTop: '0.5rem'}}>
+                  Your membership account is not linked. Please contact admin.
+                </p>
+              )}
             </div>
 
-            {/* Dates */}
             <div className="form-row form-row--2">
               <div className="form-group">
                 <label className="form-label">Issue Date *</label>
@@ -237,7 +254,6 @@ const IssueBook = () => {
                   className="input-field"
                   required
                 />
-                <p className="form-hint">Cannot be earlier than today</p>
               </div>
               <div className="form-group">
                 <label className="form-label">Return Date *</label>
@@ -250,11 +266,9 @@ const IssueBook = () => {
                   className="input-field"
                   required
                 />
-                <p className="form-hint">Maximum 15 days from issue date</p>
               </div>
             </div>
 
-            {/* Remarks */}
             <div className="form-group">
               <label className="form-label">Remarks (Optional)</label>
               <textarea
@@ -267,7 +281,6 @@ const IssueBook = () => {
               />
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="message message--error">
                 <AlertCircle size={20} />
@@ -275,7 +288,6 @@ const IssueBook = () => {
               </div>
             )}
 
-            {/* Success Message */}
             {success && (
               <div className="message message--success">
                 <Check size={20} />
@@ -283,12 +295,11 @@ const IssueBook = () => {
               </div>
             )}
 
-            {/* Submit Buttons */}
             <div className="btn-group">
               <button type="submit" disabled={submitting} className="btn-primary">
                 {submitting ? (
                   <>
-                    <Loader2 className="spinner" size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                    <Loader2 className="spinner" size={20} />
                     <span>Processing...</span>
                   </>
                 ) : (
@@ -305,7 +316,6 @@ const IssueBook = () => {
           </form>
         </div>
 
-        {/* Info Panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="card info-card">
             <h3>Issue Guidelines</h3>
@@ -316,30 +326,14 @@ const IssueBook = () => {
               </li>
               <li className="info-item">
                 <Check size={16} />
-                <span>Return date is auto-set to 15 days ahead</span>
+                <span>Return date max 15 days</span>
               </li>
               <li className="info-item">
                 <Check size={16} />
-                <span>Return date can be set earlier but not later than 15 days</span>
-              </li>
-              <li className="info-item">
-                <Check size={16} />
-                <span>Late returns incur a fine of $1 per day</span>
+                <span>Late returns fine: ₹10.00/day</span>
               </li>
             </ul>
           </div>
-
-          {selectedItem && (
-            <div className="card selected-item-card">
-              <h3>Selected Item</h3>
-              <div className="selected-item-details">
-                <p><span className="label">Name:</span> {selectedItem.name}</p>
-                <p><span className="label">{itemType === 'book' ? 'Author' : 'Director'}:</span> {selectedItem.author || selectedItem.director}</p>
-                <p><span className="label">Serial:</span> {selectedItem.serial_number}</p>
-                <p><span className="label">Category:</span> {selectedItem.category}</p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

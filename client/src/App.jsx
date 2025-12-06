@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Link , useNavigate} from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Layouts
@@ -26,12 +26,16 @@ import UserManagement from './pages/maintenance/UserManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
+  const { isAuthenticated, user, isAdmin, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-library-paper">
-        <div className="animate-pulse text-library-dark">Loading...</div>
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-library-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-library-dark/60 font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -43,6 +47,12 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   if (adminOnly && !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
+
+  // If user is pending, prevent access to any page except Dashboard
+  if (!isAdmin && user?.membershipStatus === 'pending' && location.pathname !== '/dashboard') {
+    return <Navigate to="/dashboard" replace />;
+  }
+  // --------------------------
 
   return children;
 };
@@ -80,12 +90,24 @@ function App() {
         <Route path="transactions/pay-fine" element={<PayFine />} />
         
         {/* Reports */}
-        <Route path="reports/books" element={<BooksList />} />
-        <Route path="reports/movies" element={<MoviesList />} />
-        <Route path="reports/members" element={<MembersList />} />
-        <Route path="reports/active-issues" element={<ActiveIssues />} />
-        <Route path="reports/overdue" element={<OverdueReturns />} />
-        <Route path="reports/requests" element={<IssueRequests />} />
+        <Route path="reports/books" element={
+          <ProtectedRoute adminOnly><BooksList /></ProtectedRoute>
+        } />
+        <Route path="reports/movies" element={
+          <ProtectedRoute adminOnly><MoviesList /></ProtectedRoute>
+        } />
+        <Route path="reports/members" element={
+          <ProtectedRoute adminOnly><MembersList /></ProtectedRoute>
+        } />
+        <Route path="reports/active-issues" element={
+          <ProtectedRoute adminOnly><ActiveIssues /></ProtectedRoute>
+        } />
+        <Route path="reports/overdue" element={
+          <ProtectedRoute adminOnly><OverdueReturns /></ProtectedRoute>
+        } />
+        <Route path="reports/requests" element={
+          <ProtectedRoute adminOnly><IssueRequests /></ProtectedRoute>
+        } />
         
         {/* Maintenance (Admin Only) */}
         <Route path="maintenance/members/add" element={

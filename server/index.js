@@ -78,15 +78,14 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
-║     📚 Library Management System - Backend Server             ║
+║        Library Management System - Backend Server             ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Server running on: http://localhost:${PORT}                    ║
-║  API Health Check:  http://localhost:${PORT}/api/health         ║
+║  Server running on: http://localhost:${PORT}                     ║
+║  API Health Check:  http://localhost:${PORT}/api/health          ║
 ║  Database: MongoDB Atlas                                      ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Default Credentials:                                         ║
-║  Admin: username=admin, password=admin123                     ║
-║  User:  username=user,  password=user123                      ║
+║  Admin: username=admin, password=admin_techno                 ║
 ╚═══════════════════════════════════════════════════════════════╝
       `);
     });

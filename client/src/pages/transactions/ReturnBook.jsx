@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RotateCcw, AlertCircle, Search, Loader2 } from 'lucide-react';
 import { transactionsApi } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext'; // Import Auth
 import './styles/Transactions.css';
 
 const ReturnBook = () => {
+  const { user, isAdmin } = useAuth(); // Get user info
   const navigate = useNavigate();
   const [activeIssues, setActiveIssues] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -23,12 +25,24 @@ const ReturnBook = () => {
 
   useEffect(() => {
     loadActiveIssues();
-  }, []);
+  }, [user, isAdmin]);
 
   const loadActiveIssues = async () => {
     try {
+      // Backend should ideally filter, but we filter here to be safe visually
       const data = await transactionsApi.getActive();
-      setActiveIssues(data);
+      
+      if (isAdmin) {
+        setActiveIssues(data);
+      } else if (user?.memberId) {
+        // Filter: only show items belonging to this user
+        const myIssues = data.filter(issue => 
+          issue.member_id === user.memberId || issue.member_id?._id === user.memberId
+        );
+        setActiveIssues(myIssues);
+      } else {
+        setActiveIssues([]); // No member ID linked
+      }
     } catch (err) {
       setError('Failed to load active issues');
     } finally {
@@ -93,7 +107,6 @@ const ReturnBook = () => {
 
   const filteredIssues = activeIssues.filter(issue =>
     issue.item_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.member_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     issue.item_serial?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -118,7 +131,9 @@ const ReturnBook = () => {
       <div className="transactions-grid">
         <div className="card">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-            <h2 className="section-title" style={{ marginBottom: 0 }}>Active Issues</h2>
+            <h2 className="section-title" style={{ marginBottom: 0 }}>
+              {isAdmin ? 'Active Issues' : 'My Active Issues'}
+            </h2>
             <div className="search-wrapper" style={{ maxWidth: '16rem' }}>
               <Search className="search-icon" size={18} />
               <input

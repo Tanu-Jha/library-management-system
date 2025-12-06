@@ -54,12 +54,12 @@ const UpdateMember = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!member) return;
-
+    const memberId = member.id || member._id;
     setSubmitting(true);
     setError('');
 
     try {
-      await membersApi.update(member._id, formData);
+      await membersApi.update(memberId, formData);
       setSuccess(formData.cancelMembership ? 'Membership cancelled!' : 'Membership updated successfully!');
       setTimeout(() => navigate('/reports/members'), 2000);
     } catch (err) {

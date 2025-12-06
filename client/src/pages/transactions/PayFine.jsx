@@ -156,7 +156,7 @@ const PayFine = () => {
                   {hasFine ? 'Fine Amount Due' : 'No Fine Due'}
                 </p>
                 <p className={`fine-amount ${hasFine ? 'fine-amount--has-fine' : 'fine-amount--no-fine'}`}>
-                  ${fineAmount.toFixed(2)}
+                  ₹{fineAmount.toFixed(2)}
                 </p>
               </div>
               <div className={`fine-icon ${hasFine ? 'fine-icon--has-fine' : 'fine-icon--no-fine'}`}>
@@ -164,7 +164,7 @@ const PayFine = () => {
               </div>
             </div>
             {hasFine && (
-              <p className="fine-note">Fine calculated at $1.00 per day overdue</p>
+              <p className="fine-note">Fine calculated at ₹1.00 per day overdue</p>
             )}
 
             {/* Fine Paid Checkbox */}

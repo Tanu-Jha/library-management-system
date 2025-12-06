@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
-import { User } from '../models/index.js';
+import { User, Member } from '../models/index.js'; 
 import { generateToken, authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -31,6 +31,8 @@ router.post('/login', async (req, res) => {
 
     const token = generateToken(user);
 
+    const member = await Member.findOne({ user_id: user._id });
+
     res.json({
       token,
       user: {
@@ -38,7 +40,9 @@ router.post('/login', async (req, res) => {
         username: user.username,
         name: user.name,
         email: user.email,
-        isAdmin: user.is_admin === 1
+        isAdmin: user.is_admin === 1,
+        membershipStatus: user.membership_status,
+        memberId: member ? member._id : null
       }
     });
   } catch (error) {
@@ -83,7 +87,8 @@ router.post('/google', async (req, res) => {
           email,
           google_id: googleId,
           is_admin: 0,
-          is_active: 1
+          is_active: 1,
+          membership_status: 'pending'
         });
       }
     }
@@ -94,6 +99,8 @@ router.post('/google', async (req, res) => {
 
     const token = generateToken(user);
 
+    const member = await Member.findOne({ user_id: user._id });
+
     res.json({
       token,
       user: {
@@ -101,7 +108,9 @@ router.post('/google', async (req, res) => {
         username: user.username,
         name: user.name,
         email: user.email,
-        isAdmin: user.is_admin === 1
+        isAdmin: user.is_admin === 1,
+        membershipStatus: user.membership_status,
+        memberId: member ? member._id : null
       }
     });
   } catch (error) {
@@ -110,7 +119,7 @@ router.post('/google', async (req, res) => {
   }
 });
 
-// Get current user
+// Get current user (Context refresh)
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -119,12 +128,16 @@ router.get('/me', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const member = await Member.findOne({ user_id: user._id });
+
     res.json({
       id: user._id,
       username: user.username,
       name: user.name,
       email: user.email,
-      isAdmin: user.is_admin === 1
+      isAdmin: user.is_admin === 1,
+      membershipStatus: user.membership_status,
+      memberId: member ? member._id : null // <--- SEND MEMBER ID
     });
   } catch (error) {
     console.error('Get user error:', error);
@@ -161,7 +174,8 @@ router.post('/register', async (req, res) => {
       name,
       email: email || null,
       is_admin: isAdmin ? 1 : 0,
-      is_active: 1
+      is_active: 1,
+      membership_status: isAdmin ? 'approved' : 'pending'
     });
 
     res.status(201).json({

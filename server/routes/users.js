@@ -17,6 +17,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       email: u.email,
       isAdmin: u.is_admin === 1,
       isActive: u.is_active === 1,
+      membership_status: u.membership_status,
       created_at: u.created_at
     })));
   } catch (error) {
@@ -43,6 +44,7 @@ router.get('/:id', authenticateToken, requireAdmin, async (req, res) => {
       email: user.email,
       isAdmin: user.is_admin === 1,
       isActive: user.is_active === 1,
+      membership_status: user.membership_status,
       created_at: user.created_at
     });
   } catch (error) {
@@ -80,7 +82,8 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
       name,
       email: email || null,
       is_admin: isAdmin ? 1 : 0,
-      is_active: isActive !== false ? 1 : 0
+      is_active: isActive !== false ? 1 : 0,
+      membership_status: 'approved'
     });
 
     res.status(201).json({
@@ -125,7 +128,8 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.is_admin === 1,
-      isActive: user.is_active === 1
+      isActive: user.is_active === 1,
+      membership_status: user.membership_status
     });
   } catch (error) {
     console.error('Update user error:', error);

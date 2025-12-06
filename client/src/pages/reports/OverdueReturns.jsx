@@ -28,7 +28,7 @@ const OverdueReturns = () => {
     item.member_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const calculateFine = (daysOverdue) => (daysOverdue * 1.00).toFixed(2);
+  const calculateFine = (daysOverdue) => (daysOverdue * 10.00).toFixed(2);
 
   if (loading) {
     return (
@@ -102,7 +102,7 @@ const OverdueReturns = () => {
                       </span>
                     </td>
                     <td className="cell-danger" style={{ fontWeight: 500 }}>
-                      ${calculateFine(Math.ceil(item.days_overdue))}
+                      ₹{calculateFine(Math.ceil(item.days_overdue))}
                     </td>
                   </tr>
                 ))}

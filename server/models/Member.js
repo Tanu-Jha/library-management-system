@@ -10,6 +10,7 @@ const memberSchema = new mongoose.Schema({
   start_date: { type: Date, required: true },
   end_date: { type: Date, required: true },
   membership_type: { type: String, enum: ['6_months', '1_year', '2_years'], default: '6_months' },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   is_active: { type: Number, default: 1 },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 

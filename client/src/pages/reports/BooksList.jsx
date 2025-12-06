@@ -130,7 +130,7 @@ const BooksList = () => {
                       {book.status}
                     </span>
                   </td>
-                  <td>${book.cost?.toFixed(2)}</td>
+                  <td>₹{book.cost?.toFixed(2)}</td>
                   <td>
                     {book.procurement_date
                       ? new Date(book.procurement_date).toLocaleDateString()

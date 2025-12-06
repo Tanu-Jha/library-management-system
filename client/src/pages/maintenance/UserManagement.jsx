@@ -76,6 +76,30 @@ const UserManagement = () => {
     setShowModal(true);
   };
 
+  const handleApprove = async (userId) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      
+      const response = await fetch(`${API_URL}/api/members/approve/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to approve request');
+      }
+
+      loadUsers();
+      setSuccess('User approved and membership created!');
+    } catch (err) {
+      console.error(err);
+      setError('Approval failed. Please try again.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name) {
@@ -186,10 +210,23 @@ const UserManagement = () => {
                     )}
                   </td>
                   <td>
-                    {user.isActive ? (
-                      <span className="badge badge--success">Active</span>
+                    {/* CHANGED: Added !user.isAdmin check */}
+                    {user.membership_status === 'pending' && !user.isAdmin ? (
+                      <button 
+                        onClick={() => handleApprove(user.id)}
+                        className="badge badge--warning" 
+                        style={{ cursor: 'pointer', border: 'none' }}
+                      >
+                        Approve Request
+                      </button>
                     ) : (
-                      <span className="badge badge--danger">Inactive</span>
+                      user.isActive ? (
+                        <span className="badge badge--success">
+                          {user.isAdmin ? 'Admin' : 'Active Member'}
+                        </span>
+                      ) : (
+                        <span className="badge badge--danger">Inactive</span>
+                      )
                     )}
                   </td>
                   <td>

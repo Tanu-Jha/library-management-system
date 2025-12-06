@@ -4,7 +4,7 @@ import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-const FINE_PER_DAY = 1.00;
+const FINE_PER_DAY = 10.00;
 
 // Helper to get item details
 async function getItemDetails(itemType, itemId) {
@@ -36,9 +36,15 @@ router.get('/', authenticateToken, async (req, res) => {
   try {
     const { status, memberId, itemType } = req.query;
     
+    let finalMemberId = memberId;
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember) return res.json([]); 
+      finalMemberId = userMember._id.toString();
+    }
     const filter = {};
     if (status) filter.status = status;
-    if (memberId) filter.member_id = memberId;
+    if (finalMemberId) filter.member_id = finalMemberId;
     if (itemType) filter.item_type = itemType;
 
     const transactions = await Transaction.find(filter).sort({ created_at: -1 });
@@ -53,9 +59,16 @@ router.get('/', authenticateToken, async (req, res) => {
 // Get active issues
 router.get('/active', authenticateToken, async (req, res) => {
   try {
-    const transactions = await Transaction.find({
-      status: { $in: ['issued', 'overdue'] }
-    }).sort({ issue_date: -1 });
+    const filter = { status: { $in: ['issued', 'overdue'] } };
+
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember) return res.json([]);
+      filter.member_id = userMember._id;
+    }
+
+
+    const transactions = await Transaction.find(filter).sort({ issue_date: -1 });
 
     const formatted = await Promise.all(transactions.map(formatTransaction));
     res.json(formatted);
@@ -77,9 +90,15 @@ router.get('/overdue', authenticateToken, async (req, res) => {
       { status: 'overdue' }
     );
 
-    const transactions = await Transaction.find({
-      status: 'overdue'
-    }).sort({ expected_return_date: 1 });
+    const filter = { status: 'overdue' };
+
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember) return res.json([]);
+      filter.member_id = userMember._id;
+    }
+
+    const transactions = await Transaction.find(filter).sort({ expected_return_date: 1 });
 
     const formatted = await Promise.all(transactions.map(async (t) => {
       const base = await formatTransaction(t);
@@ -104,6 +123,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Transaction not found' });
     }
 
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember || transaction.member_id.toString() !== userMember._id.toString()) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+    }
+
     const formatted = await formatTransaction(transaction);
     res.json(formatted);
   } catch (error) {
@@ -119,6 +145,16 @@ router.post('/issue', authenticateToken, async (req, res) => {
 
     if (!memberId || !itemType || !itemId || !issueDate || !returnDate) {
       return res.status(400).json({ error: 'Member ID, item type, item ID, issue date, and return date are required' });
+    }
+
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember) {
+        return res.status(403).json({ error: "No membership found for your account." });
+      }
+      if (userMember._id.toString() !== memberId) {
+        return res.status(403).json({ error: "You can only issue items for yourself." });
+      }
     }
 
     const today = new Date();
@@ -189,6 +225,13 @@ router.post('/return', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Transaction not found or already returned' });
     }
 
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember || transaction.member_id.toString() !== userMember._id.toString()) {
+        return res.status(403).json({ error: "You can only return items issued to you." });
+      }
+    }
+
     let fineAmount = 0;
     const expectedReturn = new Date(transaction.expected_return_date);
     const actualReturn = new Date(actualReturnDate);
@@ -241,6 +284,13 @@ router.post('/pay-fine', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Transaction not found or already returned' });
     }
 
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember || transaction.member_id.toString() !== userMember._id.toString()) {
+        return res.status(403).json({ error: "You can only pay fines for your own items." });
+      }
+    }
+
     const fine = await Fine.findOne({ transaction_id: transactionId });
 
     if (fine && fine.fine_amount > 0 && !finePaid) {
@@ -281,6 +331,13 @@ router.get('/fine/:transactionId', authenticateToken, async (req, res) => {
     const transaction = await Transaction.findById(transactionId);
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    if (!req.user.isAdmin) {
+      const userMember = await Member.findOne({ user_id: req.user.id });
+      if (!userMember || transaction.member_id.toString() !== userMember._id.toString()) {
+        return res.status(403).json({ error: "Access denied" });
+      }
     }
 
     let fineAmount = 0;

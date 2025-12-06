@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
   is_admin: { type: Number, default: 0 },
   is_active: { type: Number, default: 1 },
   google_id: { type: String, unique: true, sparse: true },
+  membership_status: { 
+    type: String, 
+    enum: ['none', 'pending', 'approved', 'rejected'], 
+    default: 'pending'
+  }
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 export default mongoose.models.User || mongoose.model('User', userSchema);

@@ -210,7 +210,7 @@ const UpdateBook = () => {
 
             <div className="form-row form-row--2">
               <div className="form-group">
-                <label className="form-label">Cost ($)</label>
+                <label className="form-label">Cost (₹)</label>
                 <input
                   type="number"
                   step="0.01"

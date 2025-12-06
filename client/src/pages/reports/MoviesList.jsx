@@ -130,7 +130,7 @@ const MoviesList = () => {
                       {movie.status}
                     </span>
                   </td>
-                  <td>${movie.cost?.toFixed(2)}</td>
+                  <td>₹{movie.cost?.toFixed(2)}</td>
                   <td>
                     {movie.procurement_date
                       ? new Date(movie.procurement_date).toLocaleDateString()
